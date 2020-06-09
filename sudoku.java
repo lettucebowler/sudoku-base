@@ -97,12 +97,6 @@ class Sudoku {
             }
         }
         builder.append(bar);
-        // StringBuilder test = new StringBuilder();
-        // for (int[] row : this.board_filled) {
-        //     test.append(Arrays.toString(row));
-        //     test.append("\n");
-        // }
-        // return test.toString();
         return builder.toString();
     }
 
