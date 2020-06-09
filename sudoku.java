@@ -1,6 +1,7 @@
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.Arrays;
 
 class Sudoku {
     private int board_size;
@@ -92,10 +93,16 @@ class Sudoku {
             builder.append(bar);
             builder.append("\n");
             for (int j = 0; j < this.cell_size; j++) {
-                builder.append(this.row(i * this.cell_size + j));
+                builder.append(this.row(i + j));
             }
         }
         builder.append(bar);
+        // StringBuilder test = new StringBuilder();
+        // for (int[] row : this.board_filled) {
+        //     test.append(Arrays.toString(row));
+        //     test.append("\n");
+        // }
+        // return test.toString();
         return builder.toString();
     }
 
@@ -122,7 +129,7 @@ class Sudoku {
         row_builder.append("| ");
         for(int i = 0; i < this.cell_size; i++) {
             for(int j = 0; j < this.cell_size; j++) {
-                int num = this.board_filled[row_index][i + j];
+                int num = this.board_filled[row_index][i * this.cell_size + j];
                 int num_digits = Integer.toString(num).length();
                 int needed_digits = max_digits - num_digits;
                 for (int k = 1; k < needed_digits; k++) {
