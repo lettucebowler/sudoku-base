@@ -87,7 +87,6 @@ class Sudoku {
     }
 
     private void swap_cols(int iterations) {
-        // Random random = new Random();
         int k1, k2;
 
         for (int j = 0; j < iterations; j++) {
