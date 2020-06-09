@@ -1,5 +1,6 @@
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Random;
 
 class Sudoku {
     private int board_size;
@@ -12,6 +13,8 @@ class Sudoku {
         this.board_size = cell_size * cell_size;
         this.board_filled = new int[board_size][board_size];
         this.board_emptied = new int[board_size][board_size];
+        this.generate_filled();
+        this.scramble_board();
     }
 
     public int[][] get_board_filled() {
@@ -43,6 +46,41 @@ class Sudoku {
             if ( n > this.board_size) {
                 n = (n % this.board_size) + 1;
             }
+        }
+    }
+
+    private void scramble_board() {
+        Random random = new Random();
+        int max_iterations = 10;
+        this.permute_rows(random.nextInt(max_iterations));
+        this.permute_cols(random.nextInt(max_iterations));
+        this.swap_rows(random.nextInt(max_iterations));
+        this.swap_cols(random.nextInt(max_iterations));
+    }
+
+    private void permute_rows(int iterations) {
+        Random random = new Random();
+        int[] temp;
+        for (int i = 0; i < iterations; i++) {
+            // Do something
+        }
+    }
+
+    private void permute_cols(int iterations) {
+        for (int i = 0; i < iterations; i++) {
+            // Do something
+        }
+    }
+
+    private void swap_rows(int iterations) {
+        for (int i = 0; i < iterations; i++) {
+            // Do something
+        }
+    }
+
+    private void swap_cols(int iterations) {
+        for (int i = 0; i < iterations; i++) {
+            // Do something
         }
     }
 
@@ -102,7 +140,6 @@ class Sudoku {
     public static void main(String args[]) {
         int cell_size = 3;
         Sudoku sudoku = new Sudoku(cell_size);
-        sudoku.generate_filled();
         System.out.println(sudoku.to_string());
 
     }
