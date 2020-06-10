@@ -143,7 +143,7 @@ class Sudoku {
 
         bar_builder.append("+");
         for(int i = 0; i < this.cell_size; i++) {
-            for(int j = 0; j < this.cell_size * (number_width + 1) + 1; j++) {
+            for(int j = 0; j < this.cell_size * (2 * number_width) - 1; j++) {
                 bar_builder.append("-");
             }
             bar_builder.append("+");
@@ -157,7 +157,7 @@ class Sudoku {
         String bound = Integer.toString(max_digits);
         max_digits = bound.length();
 
-        row_builder.append("| ");
+        row_builder.append("|");
         for(int i = 0; i < this.cell_size; i++) {
             for(int j = 0; j < this.cell_size; j++) {
                 int num = board[row_index][i * this.cell_size + j];
@@ -172,9 +172,9 @@ class Sudoku {
                 else {
                     row_builder.append(num);
                 }
-                row_builder.append(" ");
+                row_builder.append("|");
             }
-            row_builder.append("| ");
+            // row_builder.append("|");
         }
         row_builder.append("\n");
         return row_builder.toString();
