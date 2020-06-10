@@ -200,10 +200,16 @@ public class Sudoku {
         //         }
         //     }
         // }
+        int num_removed = 0;
         do {
             // Randomly remove a number
-            board_temp[get_random(board_size)][get_random(board_size)] = 0;
-        } while (num_solutions(0, 0, board_temp, 0) < 2);
+            int row = get_random(board_size);
+            int col = get_random(board_size);
+            if (board_temp[row][col] != 0) {
+                board_temp[row][col] = 0;
+                num_removed++;
+            }
+        } while (num_removed < 52 && num_solutions(0, 0, board_temp, 0) < 2);
         this.board_emptied = new int[this.board_size][this.board_size];
         for(int i = 0; i < this.board_size; i++) {
             for(int j = 0; j < this.board_size; j++) {
@@ -231,72 +237,6 @@ public class Sudoku {
         }
         board[i][j] = 0;
         return count;
-    }
-
-    public void strike_out(int k1,int k2) {
-        // int row_from;
-        // int row_to;
-        // int col_from;
-        // int col_to;
-        // int i,j,b,c;
-        // int rem1,rem2;
-        // int flag;
-        // int temp=this.board_temp[k1][k2];
-        // int count=this.board_size;
-        // for (i = 1; i <= this.board_size; i++) {
-        //     flag=1;
-        //     for(j = 0; j < this.board_size; j++) {
-        //         if(j!=k2) {
-        //             if(i != this.board_temp[k1][j]) {
-        //                 continue;
-        //             }
-        //             else {
-        //                 flag = 0;
-        //                 break;
-        //             }
-        //         }
-        //     }
-        //     if(flag == 1) {
-        //         for(c = 0; c < this.board_size; c++) {
-        //             if(c != k1) {
-        //                 if(i != this.board_temp[c][k2]) {
-        //                     continue;
-        //                 }
-        //                 else {
-        //                     flag = 0;
-        //                     break;
-        //                 }
-        //             }
-        //         }
-        //     }
-        //     if( flag == 1) {
-        //         rem1 = k1 % this.cell_size;
-        //         rem2 = k2 % this.cell_size;
-        //         row_from = k1 - rem1;
-        //         row_to = k1 + (this.cell_size - 1 - rem1);
-        //         col_from = k2-rem2;
-        //         col_to = k2 + (this.cell_size - 1 -rem2);
-        //         for(c = row_from; c <= row_to; c++) {
-        //             for(b = col_from; b <= col_to; b++) {
-        //                 if(c != k1 && b != k2) {
-        //                     if(i != this.board_temp[c][b])
-        //                         continue;
-        //                     else {
-        //                         flag = 0;
-        //                         break;
-        //                     }
-        //                 }
-        //             }
-        //         }
-        //     }
-        //     if(flag == 0)
-        //     count--;
-        // }
-        // if(count == 1) {
-        //     this.board_temp[k1][k2] = 0;
-        //     // counter_num--;
-        //     count--;
-        // }
     }
 
     public static boolean safety_check(int[][] board, int size) {
@@ -349,17 +289,6 @@ public class Sudoku {
                 }
             }
         }
-        // int boxRowStart = row - row % sqrt;
-        // int boxColStart = col - col % sqrt;
-        // for (int r = boxRowStart;
-        //      r < boxRowStart + sqrt; r++) {
-        //     for (int d = boxColStart;
-        //          d < boxColStart + sqrt; d++) {
-        //         if (board[r][d] == num) {
-        //             return false;
-        //         }
-        //     }
-        // }
         // Passed all tests
         return true;
     }
@@ -416,10 +345,9 @@ public class Sudoku {
         boolean safe = true;
         Sudoku sudoku = new Sudoku(cell_size);
         if (Sudoku.safety_check(sudoku.get_board_filled(), sudoku.get_board_size())) {
-            safe = false;
+            System.out.println(sudoku.to_string(sudoku.get_board_filled()));
+            System.out.println("");
+            System.out.println(sudoku.to_string(sudoku.get_board_emptied()));
         }
-        // System.out.println(sudoku.to_string(sudoku.get_board_filled()));
-        // System.out.println("");
-        System.out.println(sudoku.to_string(sudoku.get_board_emptied()));
     }
 }
