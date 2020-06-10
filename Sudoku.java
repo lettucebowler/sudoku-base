@@ -186,86 +186,117 @@ public class Sudoku {
                 this.board_temp[row][col] = this.board_filled[row][col];
             }
         }
-        for (int g = 0; g < this.board_size * this.board_size; g++) {
-            this.strike_out(get_random(this.board_size), get_random(this.board_size));
-        }
+        // for (int g = 0; g < this.board_size * this.board_size; g++) {
+        //     this.strike_out(get_random(this.board_size), get_random(this.board_size));
+        // }
+        // this.board_emptied = new int[this.board_size][this.board_size];
+        // for(int i = 0; i < this.board_size; i++) {
+        //     for(int j = 0; j < this.board_size; j++) {
+        //         if (this.board_temp[i][j] == 0) {
+        //             this.board_emptied[i][j] = this.board_filled[i][j];
+        //         }
+        //         else {
+        //             this.board_emptied[i][j] = 0;
+        //         }
+        //     }
+        // }
+        do {
+            // Randomly remove a number
+            board_temp[get_random(board_size)][get_random(board_size)] = 0;
+        } while (num_solutions(0, 0, board_temp, 0) < 2);
         this.board_emptied = new int[this.board_size][this.board_size];
         for(int i = 0; i < this.board_size; i++) {
             for(int j = 0; j < this.board_size; j++) {
-                if (this.board_temp[i][j] == 0) {
-                    this.board_emptied[i][j] = this.board_filled[i][j];
-                }
-                else {
-                    this.board_emptied[i][j] = 0;
-                }
+                this.board_emptied[i][j] = board_temp[i][j];
             }
         }
     }
 
+    private int num_solutions(int i, int j, int[][] board, int count) {
+        if (i == board.length) {
+            i = 0;
+            if (++j == board.length) {
+                return 1 + count;
+            }
+        }
+        if (board[i][j] != 0) { // Skip filled cells
+            return num_solutions(i+1, j, board, count);
+        }
+        for (int val = 1; val <= board.length && count < 2; ++val) {
+            if (is_safe(board, i, j, val)) {
+                board[i][j] = val;
+                count = num_solutions(i + 1, j, board, count);
+                // System.out.println(count);
+            }
+        }
+        board[i][j] = 0;
+        return count;
+    }
+
     public void strike_out(int k1,int k2) {
-        int row_from;
-        int row_to;
-        int col_from;
-        int col_to;
-        int i,j,b,c;
-        int rem1,rem2;
-        int flag;
-        int temp=this.board_temp[k1][k2];
-        int count=this.board_size;
-        for (i = 1; i <= this.board_size; i++) {
-            flag=1;
-            for(j = 0; j < this.board_size; j++) {
-                if(j!=k2) {
-                    if(i != this.board_temp[k1][j]) {
-                        continue;
-                    }
-                    else {
-                        flag = 0;
-                        break;
-                    }
-                }
-            }
-            if(flag == 1) {
-                for(c = 0; c < this.board_size; c++) {
-                    if(c != k1) {
-                        if(i != this.board_temp[c][k2]) {
-                            continue;
-                        }
-                        else {
-                            flag = 0;
-                            break;
-                        }
-                    }
-                }
-            }
-            if( flag == 1) {
-                rem1 = k1 % this.cell_size;
-                rem2 = k2 % this.cell_size;
-                row_from = k1 - rem1;
-                row_to = k1 + (this.cell_size - 1 - rem1);
-                col_from = k2-rem2;
-                col_to = k2 + (this.cell_size - 1 -rem2);
-                for(c = row_from; c <= row_to; c++) {
-                    for(b = col_from; b <= col_to; b++) {
-                        if(c != k1 && b != k2) {
-                            if(i != this.board_temp[c][b])
-                                continue;
-                            else {
-                                flag = 0;
-                                break;
-                            }
-                        }
-                    }
-                }
-            }
-            if(flag == 0)
-            count--;
-        }
-        if(count == 1) {
-            this.board_temp[k1][k2] = 0;
-            // counter_num--;
-            count--;
-        }
+        // int row_from;
+        // int row_to;
+        // int col_from;
+        // int col_to;
+        // int i,j,b,c;
+        // int rem1,rem2;
+        // int flag;
+        // int temp=this.board_temp[k1][k2];
+        // int count=this.board_size;
+        // for (i = 1; i <= this.board_size; i++) {
+        //     flag=1;
+        //     for(j = 0; j < this.board_size; j++) {
+        //         if(j!=k2) {
+        //             if(i != this.board_temp[k1][j]) {
+        //                 continue;
+        //             }
+        //             else {
+        //                 flag = 0;
+        //                 break;
+        //             }
+        //         }
+        //     }
+        //     if(flag == 1) {
+        //         for(c = 0; c < this.board_size; c++) {
+        //             if(c != k1) {
+        //                 if(i != this.board_temp[c][k2]) {
+        //                     continue;
+        //                 }
+        //                 else {
+        //                     flag = 0;
+        //                     break;
+        //                 }
+        //             }
+        //         }
+        //     }
+        //     if( flag == 1) {
+        //         rem1 = k1 % this.cell_size;
+        //         rem2 = k2 % this.cell_size;
+        //         row_from = k1 - rem1;
+        //         row_to = k1 + (this.cell_size - 1 - rem1);
+        //         col_from = k2-rem2;
+        //         col_to = k2 + (this.cell_size - 1 -rem2);
+        //         for(c = row_from; c <= row_to; c++) {
+        //             for(b = col_from; b <= col_to; b++) {
+        //                 if(c != k1 && b != k2) {
+        //                     if(i != this.board_temp[c][b])
+        //                         continue;
+        //                     else {
+        //                         flag = 0;
+        //                         break;
+        //                     }
+        //                 }
+        //             }
+        //         }
+        //     }
+        //     if(flag == 0)
+        //     count--;
+        // }
+        // if(count == 1) {
+        //     this.board_temp[k1][k2] = 0;
+        //     // counter_num--;
+        //     count--;
+        // }
     }
 
     public static boolean safety_check(int[][] board, int size) {
@@ -299,25 +330,36 @@ public class Sudoku {
                 return false;
             }
         }
-        // column has the unique numbers (column-clash)
+        // Check column
         for (int r = 0; r < board.length; r++) {
             if (board[r][col] == num) {
                 return false;
             }
         }
         // Check box
-        int sqrt = (int)Math.sqrt(board.length);
-        int boxRowStart = row - row % sqrt;
-        int boxColStart = col - col % sqrt;
-        for (int r = boxRowStart;
-             r < boxRowStart + sqrt; r++) {
-            for (int d = boxColStart;
-                 d < boxColStart + sqrt; d++) {
-                if (board[r][d] == num) {
-                    return false;
+        int order = (int)Math.sqrt(board.length);
+        for (int i = 0; i < board.length; i++) {
+            for (int j = 0; j < board.length; j++) {
+                boolean same_row_block = i / order == row / order;
+                boolean same_col_block = j / order == col / order;
+                if (same_row_block && same_col_block) {
+                    if (board[i][j] == num) {
+                        return false;
+                    }
                 }
             }
         }
+        // int boxRowStart = row - row % sqrt;
+        // int boxColStart = col - col % sqrt;
+        // for (int r = boxRowStart;
+        //      r < boxRowStart + sqrt; r++) {
+        //     for (int d = boxColStart;
+        //          d < boxColStart + sqrt; d++) {
+        //         if (board[r][d] == num) {
+        //             return false;
+        //         }
+        //     }
+        // }
         // Passed all tests
         return true;
     }
