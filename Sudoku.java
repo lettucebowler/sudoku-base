@@ -3,14 +3,14 @@ import java.util.ArrayList;
 import java.util.Random;
 import java.util.Arrays;
 
-class Sudoku {
+public class Sudoku {
     private int board_size;
     private int cell_size;
     private int[][] board_filled;
     private int[][] board_temp;
     private int[][] board_emptied;
 
-    Sudoku(int cell_size) {
+    public Sudoku(int cell_size) {
         this.cell_size = cell_size;
         this.board_size = cell_size * cell_size;
         this.board_filled = new int[board_size][board_size];
@@ -201,73 +201,6 @@ class Sudoku {
             }
         }
     }
-
-    // private void strike_out(int k1,int k2) {
-    //     int row_from;
-    //     int row_to;
-    //     int col_from;
-    //     int col_to;
-    //     int i,j,b,c;
-    //     int rem1,rem2;
-    //     int flag;
-    //     int temp = this.board_filled[k1][k2];
-    //     int count = this.board_size;
-    //     for(i = 1; i <= this.board_size; i++) {
-    //         flag = 1;
-    //         for(j = 0; j < this.board_size; j++) {
-    //             if (j != k2) {
-    //                 if(i != board_filled[k1][j]) {
-    //                     continue;
-    //                 }
-    //                 else {
-    //                     flag=0;
-    //                     break;
-    //                 }
-    //             }
-    //         }
-    //         if(flag == 1) {
-    //             for(c = 0; c <this.board_size; c++) {
-    //                 if(c != k1) {
-    //                     if(i !=board_filled[c][k2]) {
-    //                         continue;
-    //                     }
-    //                     else {
-    //                         flag=0;
-    //                         break;
-    //                     }
-    //                 }
-    //             }
-    //         }
-    //         if(flag == 1) {
-    //             rem1 = k1 % this.cell_size;
-    //             rem2 = k2 % this.cell_size;
-    //             row_from = k1 - rem1;
-    //             row_to = k1 + (this.cell_size - 1  - rem1);
-    //             col_from = k2 - rem2;
-    //             col_to = k2 + (this.cell_size - 1 - rem2);
-    //             for (c = row_from; c <= row_to; c++) {
-    //                 for(b = col_from; b <= col_to; b++) {
-    //                     if(c != k1 && b != k2) {
-    //                         if(i != board_filled[c][b]) {
-    //                             continue;
-    //                         }
-    //                         else {
-    //                             flag = 0;
-    //                             break;
-    //                         }
-    //                     }
-    //                 }
-    //             }
-    //         }
-    //         if (flag == 0) {
-    //             count--;
-    //         }
-    //     }
-    //     if (count == 1) {
-    //         board_temp[k1][k2] = 0;
-    //         count--;
-    //     }
-    // }
 
     public void strike_out(int k1,int k2) {
         int row_from;
