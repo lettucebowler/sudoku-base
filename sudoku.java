@@ -35,7 +35,8 @@ class Sudoku {
     public void generate_filled() {
         this.board_size = this.cell_size * this.cell_size;
         this.board_filled = new int[this.board_size][this.board_size];
-        int k = 1,n = 1;
+        int k = 1;
+        int n = get_random(this.board_size - 1) + 1;
 
         for(int i = 0; i < this.board_size; i++) {
             k = n;
