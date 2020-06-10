@@ -7,16 +7,17 @@ class Sudoku {
     private int board_size;
     private int cell_size;
     private int[][] board_filled;
+    private int[][] board_temp;
     private int[][] board_emptied;
 
     Sudoku(int cell_size) {
         this.cell_size = cell_size;
         this.board_size = cell_size * cell_size;
         this.board_filled = new int[board_size][board_size];
-        this.board_emptied = new int[board_size][board_size];
+        this.board_temp = new int[board_size][board_size];
         this.generate_filled();
         this.scramble_board();
-        this.strike_board();
+        this.prepare_puzzle();
     }
 
     public int[][] get_board_filled() {
@@ -120,7 +121,7 @@ class Sudoku {
         }
     }
 
-    public String to_string() {
+    public String to_string(int[][] board) {
         int width = this.board_size;
         StringBuilder builder = new StringBuilder();
         String bar = divider();
@@ -128,7 +129,7 @@ class Sudoku {
             builder.append(bar);
             builder.append("\n");
             for (int j = 0; j < this.cell_size; j++) {
-                builder.append(this.row(i *this.cell_size + j));
+                builder.append(this.row(board, i *this.cell_size + j));
             }
         }
         builder.append(bar);
@@ -149,7 +150,7 @@ class Sudoku {
         return bar_builder.toString();
     }
 
-    private String row(int row_index) {
+    private String row(int[][] board, int row_index) {
         StringBuilder row_builder = new StringBuilder();
         int max_digits = (this.board_size * this.board_size);
         String bound = Integer.toString(max_digits);
@@ -158,13 +159,18 @@ class Sudoku {
         row_builder.append("| ");
         for(int i = 0; i < this.cell_size; i++) {
             for(int j = 0; j < this.cell_size; j++) {
-                int num = this.board_filled[row_index][i * this.cell_size + j];
+                int num = board[row_index][i * this.cell_size + j];
                 int num_digits = Integer.toString(num).length();
                 int needed_digits = max_digits - num_digits;
                 for (int k = 1; k < needed_digits; k++) {
                     row_builder.append(" ");
                 }
-                row_builder.append(num);
+                if (num == 0) {
+                    row_builder.append(" ");
+                }
+                else {
+                    row_builder.append(num);
+                }
                 row_builder.append(" ");
             }
             row_builder.append("| ");
@@ -173,13 +179,159 @@ class Sudoku {
         return row_builder.toString();
     }
 
-    private void strike_board() {
-        for(int i = 0; i < this.board_size; i++) {
-            for(int j = 0; j < this.board_size; j++) {
-                this.board_emptied[i][j] = this.board_filled[i][j];
+    private void prepare_puzzle() {
+        for(int row = 0; row < this.board_size; row++) {
+            for(int col = 0; col < this.board_size; col++) {
+                this.board_temp[row][col] = this.board_filled[row][col];
             }
         }
+        for (int g = 0; g < this.board_size * this.board_size; g++) {
+            this.strike_out(get_random(this.board_size), get_random(this.board_size));
+        }
+        this.board_emptied = new int[this.board_size][this.board_size];
+        for(int i = 0; i < this.board_size; i++) {
+            for(int j = 0; j < this.board_size; j++) {
+                if (this.board_temp[i][j] == 0) {
+                    this.board_emptied[i][j] = this.board_filled[i][j];
+                }
+                else {
+                    this.board_emptied[i][j] = 0;
+                }
+            }
+        }
+    }
 
+    // private void strike_out(int k1,int k2) {
+    //     int row_from;
+    //     int row_to;
+    //     int col_from;
+    //     int col_to;
+    //     int i,j,b,c;
+    //     int rem1,rem2;
+    //     int flag;
+    //     int temp = this.board_filled[k1][k2];
+    //     int count = this.board_size;
+    //     for(i = 1; i <= this.board_size; i++) {
+    //         flag = 1;
+    //         for(j = 0; j < this.board_size; j++) {
+    //             if (j != k2) {
+    //                 if(i != board_filled[k1][j]) {
+    //                     continue;
+    //                 }
+    //                 else {
+    //                     flag=0;
+    //                     break;
+    //                 }
+    //             }
+    //         }
+    //         if(flag == 1) {
+    //             for(c = 0; c <this.board_size; c++) {
+    //                 if(c != k1) {
+    //                     if(i !=board_filled[c][k2]) {
+    //                         continue;
+    //                     }
+    //                     else {
+    //                         flag=0;
+    //                         break;
+    //                     }
+    //                 }
+    //             }
+    //         }
+    //         if(flag == 1) {
+    //             rem1 = k1 % this.cell_size;
+    //             rem2 = k2 % this.cell_size;
+    //             row_from = k1 - rem1;
+    //             row_to = k1 + (this.cell_size - 1  - rem1);
+    //             col_from = k2 - rem2;
+    //             col_to = k2 + (this.cell_size - 1 - rem2);
+    //             for (c = row_from; c <= row_to; c++) {
+    //                 for(b = col_from; b <= col_to; b++) {
+    //                     if(c != k1 && b != k2) {
+    //                         if(i != board_filled[c][b]) {
+    //                             continue;
+    //                         }
+    //                         else {
+    //                             flag = 0;
+    //                             break;
+    //                         }
+    //                     }
+    //                 }
+    //             }
+    //         }
+    //         if (flag == 0) {
+    //             count--;
+    //         }
+    //     }
+    //     if (count == 1) {
+    //         board_temp[k1][k2] = 0;
+    //         count--;
+    //     }
+    // }
+
+    public void strike_out(int k1,int k2) {
+        int row_from;
+        int row_to;
+        int col_from;
+        int col_to;
+        int i,j,b,c;
+        int rem1,rem2;
+        int flag;
+        int temp=this.board_temp[k1][k2];
+        int count=this.board_size;
+        for (i = 1; i <= this.board_size; i++) {
+            flag=1;
+            for(j = 0; j < this.board_size; j++) {
+                if(j!=k2) {
+                    if(i != this.board_temp[k1][j]) {
+                        continue;
+                    }
+                    else {
+                        flag = 0;
+                        break;
+                    }
+                }
+            }
+            if(flag == 1) {
+                for(c = 0; c < this.board_size; c++) {
+                    if(c != k1) {
+                        if(i != this.board_temp[c][k2]) {
+                            continue;
+                        }
+                        else {
+                            flag = 0;
+                            break;
+                        }
+                    }
+                }
+            }
+            if( flag == 1) {
+                rem1 = k1 % this.cell_size;
+                rem2 = k2 % this.cell_size;
+                row_from = k1 - rem1;
+                row_to = k1 + (this.cell_size - 1 - rem1);
+                col_from = k2-rem2;
+                col_to = k2 + (this.cell_size - 1 -rem2);
+                for(c = row_from; c <= row_to; c++) {
+                    for(b = col_from; b <= col_to; b++) {
+                        if(c != k1 && b != k2) {
+                            if(i != this.board_temp[c][b])
+                                continue;
+                            else {
+                                flag = 0;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+            if(flag == 0)
+            count--;
+        }
+        if(count == 1) {
+            this.board_temp[k1][k2] = 0;
+            // counter_num--;
+            count--;
+        }
     }
 
     public static boolean safety_check(int[][] board, int size) {
@@ -290,6 +442,8 @@ class Sudoku {
         if (Sudoku.safety_check(sudoku.get_board_filled(), sudoku.get_board_size())) {
             safe = false;
         }
-        System.out.println(sudoku.to_string());
+        // System.out.println(sudoku.to_string(sudoku.get_board_filled()));
+        // System.out.println("");
+        System.out.println(sudoku.to_string(sudoku.get_board_emptied()));
     }
 }
