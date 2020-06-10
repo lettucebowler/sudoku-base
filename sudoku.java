@@ -23,6 +23,14 @@ class Sudoku {
         return this.board_filled;
     }
 
+    public int[][] get_board_emptied() {
+        return this.board_emptied;
+    }
+
+    public int get_board_size() {
+        return this.board_size;
+    }
+
     public void generate_filled() {
         this.board_size = this.cell_size * this.cell_size;
         this.board_filled = new int[this.board_size][this.board_size];
@@ -174,6 +182,29 @@ class Sudoku {
 
     }
 
+    public static boolean safety_check(int[][] board, int size) {
+        for (int i = 1; i <= size; i++) {
+            // Check that each row contains each number
+            for (int j = 0; j < size; j++) {
+                if (!Arrays.asList(board[j]).contains(i)) {
+                    return false;
+                }
+            }
+
+            // Check that each col contains each numbers
+            for (int j = 0; j < size; j++) {
+                int[] cur_col = new int[size];
+                for (int k = 0; k < size; k++) {
+                    cur_col[k] = board[j][k];
+                }
+                if (!Arrays.asList(cur_col).contains(j)) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
     // https://www.geeksforgeeks.org/sudoku-backtracking-7/
     public static boolean is_safe(int[][] board, int row, int col, int num) {
         // Check row
@@ -182,14 +213,12 @@ class Sudoku {
                 return false;
             }
         }
-
         // column has the unique numbers (column-clash)
         for (int r = 0; r < board.length; r++) {
             if (board[r][col] == num) {
                 return false;
             }
         }
-
         // Check box
         int sqrt = (int)Math.sqrt(board.length);
         int boxRowStart = row - row % sqrt;
@@ -203,9 +232,50 @@ class Sudoku {
                 }
             }
         }
-
         // Passed all tests
         return true;
+    }
+
+    public static boolean solve(int[][] board, int n) {
+        int row = -1;
+        int col = -1;
+        boolean isEmpty = true;
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                if (board[i][j] == 0) {
+                    row = i;
+                    col = j;
+                    // we still have some remaining
+                    // missing values in Sudoku
+                    isEmpty = false;
+                    break;
+                }
+            }
+            if (!isEmpty) {
+                break;
+            }
+        }
+
+        // no empty space left
+        if (isEmpty) {
+            return true;
+        }
+
+        // else for each-row backtrack
+        for (int num = 1; num <= n; num++) {
+            if (is_safe(board, row, col, num)) {
+                board[row][col] = num;
+                if (solve(board, n)) {
+                    // print(board, n);
+                    return true;
+                }
+                else {
+                    // replace it
+                    board[row][col] = 0;
+                }
+            }
+        }
+        return false;
     }
 
     private int get_random(int max) {
@@ -215,7 +285,11 @@ class Sudoku {
 
     public static void main(String args[]) {
         int cell_size = 3;
+        boolean safe = true;
         Sudoku sudoku = new Sudoku(cell_size);
+        if (Sudoku.safety_check(sudoku.get_board_filled(), sudoku.get_board_size())) {
+            safe = false;
+        }
         System.out.println(sudoku.to_string());
     }
 }
