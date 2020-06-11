@@ -36,7 +36,7 @@ public class Sudoku {
         this.board_size = this.cell_size * this.cell_size;
         this.board_filled = new int[this.board_size][this.board_size];
         int k = 1;
-        int n = get_random(this.board_size - 1) + 1;
+        int n = 1;
 
         for(int i = 0; i < this.board_size; i++) {
             k = n;
@@ -64,64 +64,59 @@ public class Sudoku {
     private void scramble_board() {
         Random random = new Random();
         int max_iterations = 10;
-        this.swap_rows(get_random(max_iterations));
-        this.swap_cols(get_random(max_iterations));
+        this.scramble_rows(get_random(max_iterations));
+        this.scramble_cols(get_random(max_iterations));
     }
 
-    // Swap two rows from a block of cells and repeat iterations times.
-    private void swap_rows(int iterations) {
-        Random random = new Random();
-        int k1, k2;
-        for (int j = 0; j < iterations; j++) {
-            int max = this.cell_size - 1;
-            int min = 0;
-
-            for(int i = 0; i < this.cell_size; i++) {
-                k1 = get_random(max - min + 1) + min;
-
+    private void scramble_rows(int iterations) {
+        for (int i = 0; i < iterations; i++) {
+            for(int j = 0; j < this.cell_size; j++) {
+                int row1 = get_random(this.cell_size);
+                int row2;
                 do {
-                    k2 = get_random(max - min + 1) + min;
-                } while(k1 == k2);
-
-                max += this.cell_size;
-                min += this.cell_size;
-                int temp;
-
-                for (int k = 0; k < this.board_size; k++) {
-                    temp = board_filled[k1][k];
-                    board_filled[k1][k] = board_filled[k2][k];
-                    board_filled[k2][k] = temp;
-                }
+                    row2 = get_random(this.cell_size);
+                } while (row1 == row2);
+                int base = j * this.cell_size;
+                swap_rows(base + row1, base + row2);
             }
         }
     }
 
-    private void swap_cols(int iterations) {
-        int k1, k2;
-
-        for (int j = 0; j < iterations; j++) {
-            int max = this.cell_size - 1;
-            int min = 0;
-
-            for(int i = 0; i < this.cell_size; i++) {
-                k1 = get_random(max - min + 1) + min;
+    private void scramble_cols(int iterations) {
+        for (int i = 0; i < iterations; i++) {
+            for(int j = 0; j < this.cell_size; j++) {
+                int col1 = get_random(this.cell_size);
+                int col2;
                 do {
-                    k2 = get_random(max - min + 1) + min;
-                } while(k1 == k2);
-
-                max += this.cell_size;
-                min += this.cell_size;
-                int temp; //swap location
-
-                for (int k = 0; k < this.board_size; k++) {
-                    temp = board_filled[k][k1];
-                    board_filled[k][k1] = board_filled[k][k2];
-                    board_filled[k][k2] = temp;
-                }
+                    col2 = get_random(this.cell_size);
+                } while (col1 == col2);
+                int base = j * this.cell_size;
+                swap_cols(base + col1, base + col2);
             }
         }
     }
 
+    // Swap two rows from a block of cells
+    private void swap_rows(int row1, int row2) {
+        int temp;
+        for(int i = 0; i < this.board_size; i++) {
+            temp = this.board_filled[row1][i];
+            this.board_filled[row1][i] = this.board_filled[row2][i];
+            this.board_filled[row2][i] = temp;
+        }
+    }
+
+    // Swap to columns from a block of cells
+    private void swap_cols(int col1, int col2) {
+        int temp;
+        for(int i = 0; i < this.board_size; i++) {
+            temp = this.board_filled[i][col1];
+            this.board_filled[i][col1] = this.board_filled[i][col2];
+            this.board_filled[i][col2] = temp;
+        }
+    }
+
+    // Returns input 2D array of integer as a string
     public String to_string(int[][] board) {
         int width = this.board_size;
         StringBuilder builder = new StringBuilder();
@@ -137,6 +132,7 @@ public class Sudoku {
         return builder.toString();
     }
 
+    // Generates and returns a horizontal divider
     private String divider() {
         StringBuilder bar_builder = new StringBuilder();
         int number_width = (int) Math.ceil(Math.log10(this.board_size));
@@ -151,6 +147,7 @@ public class Sudoku {
         return bar_builder.toString();
     }
 
+    // Generates and returns a row for the to_string() method
     private String row(int[][] board, int row_index) {
         StringBuilder row_builder = new StringBuilder();
         int max_digits = (this.board_size * this.board_size);
@@ -180,40 +177,46 @@ public class Sudoku {
         return row_builder.toString();
     }
 
+    // Takes a complete sudoku board and removes cells to create a sudoku puzzle
     private void prepare_puzzle() {
         for(int row = 0; row < this.board_size; row++) {
             for(int col = 0; col < this.board_size; col++) {
                 this.board_temp[row][col] = this.board_filled[row][col];
             }
         }
-        // for (int g = 0; g < this.board_size * this.board_size; g++) {
-        //     this.strike_out(get_random(this.board_size), get_random(this.board_size));
-        // }
-        // this.board_emptied = new int[this.board_size][this.board_size];
-        // for(int i = 0; i < this.board_size; i++) {
-        //     for(int j = 0; j < this.board_size; j++) {
-        //         if (this.board_temp[i][j] == 0) {
-        //             this.board_emptied[i][j] = this.board_filled[i][j];
-        //         }
-        //         else {
-        //             this.board_emptied[i][j] = 0;
-        //         }
-        //     }
-        // }
         int num_removed = 0;
         do {
             // Randomly remove a number
-            int row = get_random(board_size);
-            int col = get_random(board_size);
-            if (board_temp[row][col] != 0) {
-                board_temp[row][col] = 0;
-                num_removed++;
-            }
+            int row;
+            int col;
+            do {
+                row = get_random(board_size);
+                col = get_random(board_size);
+            } while (board_temp[row][col] == 0);
+
+            board_temp[row][col] = 0;
+            num_removed++;
         } while (num_removed < 52 && num_solutions(0, 0, board_temp, 0) < 2);
+
+        int num_remaining = this.board_size * this.board_size - num_removed;
         this.board_emptied = new int[this.board_size][this.board_size];
-        for(int i = 0; i < this.board_size; i++) {
-            for(int j = 0; j < this.board_size; j++) {
-                this.board_emptied[i][j] = board_temp[i][j];
+        if (num_removed < num_remaining) {
+            for(int i = 0; i < this.board_size; i++) {
+                for(int j = 0; j < this.board_size; j++) {
+                    if (board_temp[i][j] == 0) {
+                        this.board_emptied[i][j] = this.board_filled[i][j];
+                    }
+                    else {
+                        this.board_emptied[i][j] = 0;
+                    }
+                }
+            }
+        }
+        else {
+            for(int i = 0; i < this.board_size; i++) {
+                for(int j = 0; j < this.board_size; j++) {
+                    this.board_emptied[i][j] = board_temp[i][j];
+                }
             }
         }
     }
@@ -237,29 +240,6 @@ public class Sudoku {
         }
         board[i][j] = 0;
         return count;
-    }
-
-    public static boolean safety_check(int[][] board, int size) {
-        for (int i = 1; i <= size; i++) {
-            // Check that each row contains each number
-            for (int j = 0; j < size; j++) {
-                if (!Arrays.asList(board[j]).contains(i)) {
-                    return false;
-                }
-            }
-
-            // Check that each col contains each numbers
-            for (int j = 0; j < size; j++) {
-                int[] cur_col = new int[size];
-                for (int k = 0; k < size; k++) {
-                    cur_col[k] = board[j][k];
-                }
-                if (!Arrays.asList(cur_col).contains(j)) {
-                    return false;
-                }
-            }
-        }
-        return true;
     }
 
     // https://www.geeksforgeeks.org/sudoku-backtracking-7/
@@ -344,10 +324,8 @@ public class Sudoku {
         int cell_size = 3;
         boolean safe = true;
         Sudoku sudoku = new Sudoku(cell_size);
-        if (Sudoku.safety_check(sudoku.get_board_filled(), sudoku.get_board_size())) {
-            System.out.println(sudoku.to_string(sudoku.get_board_filled()));
-            System.out.println("");
-            System.out.println(sudoku.to_string(sudoku.get_board_emptied()));
-        }
+        System.out.println(sudoku.to_string(sudoku.get_board_filled()));
+        System.out.println("");
+        System.out.println(sudoku.to_string(sudoku.get_board_emptied()));
     }
 }
