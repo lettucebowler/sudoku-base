@@ -171,7 +171,6 @@ public class Sudoku {
                 }
                 row_builder.append("|");
             }
-            // row_builder.append("|");
         }
         row_builder.append("\n");
         return row_builder.toString();
@@ -185,18 +184,45 @@ public class Sudoku {
             }
         }
         int num_removed = 0;
+        int max_remove;
+        if (this.cell_size == 2) {
+            max_remove = 12;
+        }
+        else if (this.cell_size == 3) {
+            max_remove = 52;
+        }
+        else if (this.cell_size == 4) {
+            max_remove = 150;
+        }
+        else {
+            max_remove = 0;
+        }
+        int temp;
+        int row;
+        int col;
+        int solutions;
+        int[] num_count = new int[board_size];
+
+        for (int num = 0; num < board_size; num++) {
+            num_count[num] = board_size;
+        }
         do {
             // Randomly remove a number
-            int row;
-            int col;
+            // Make sure at least 1 of each number remains on the board
+
             do {
                 row = get_random(board_size);
                 col = get_random(board_size);
-            } while (board_temp[row][col] == 0);
-
+                temp = board_temp[row][col];
+            } while (temp == 0 || num_count[temp - 1] < 2);
             board_temp[row][col] = 0;
+            num_count[temp - 1]--;
             num_removed++;
-        } while (num_removed < 52 && num_solutions(0, 0, board_temp, 0) < 2);
+            solutions = num_solutions(0, 0, board_temp, 0);
+        } while (num_removed < max_remove &&  solutions < 2);
+        if (solutions > 1) {
+            board_temp[row][col] = temp;
+        }
 
         int num_remaining = this.board_size * this.board_size - num_removed;
         this.board_emptied = new int[this.board_size][this.board_size];
@@ -219,6 +245,18 @@ public class Sudoku {
                 }
             }
         }
+    }
+
+    private int num_count(int num, int[][] board) {
+        int count = 0;
+        for (int[] row : board) {
+            for (int cell : row) {
+                if (cell == num) {
+                    count++;
+                }
+            }
+        }
+        return count;
     }
 
     private int num_solutions(int i, int j, int[][] board, int count) {
@@ -315,13 +353,13 @@ public class Sudoku {
         return false;
     }
 
-    private int get_random(int max) {
+    public static int get_random(int max) {
         Random random = new Random();
         return random.nextInt(max);
     }
-
-    public static void main(String args[]) {
-        int cell_size = 3;
+    
+        public static void main(String args[]) {
+        int cell_size = 4;
         boolean safe = true;
         Sudoku sudoku = new Sudoku(cell_size);
         System.out.println(sudoku.to_string(sudoku.get_board_filled()));
